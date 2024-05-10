@@ -1,38 +1,16 @@
 from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait
 from locators import TestLocators
-from page_url import PageUrl
+from conftest import driver, login
+
 
 class TestLogout:
-
-    def test_logout_from_profile(self, driver, registered_user):
-        WebDriverWait(driver, 5).until(expected_conditions.visibility_of_element_located(
-            TestLocators.FORM_BURGER_TEXT
-        ))
-
-        # Логин
-        driver.find_element(*TestLocators.LOGIN_BUTTON_DASHBOARD).click()
-        WebDriverWait(driver, 5).until(expected_conditions.visibility_of_element_located(
-            TestLocators.LOGIN_FORM_LOGIN_BUTTON
-        ))
-
-        driver.find_element(*TestLocators.LOGIN_EMAIL).send_keys(registered_user.get('email'))
-        driver.find_element(*TestLocators.INPUT_PASSWORD).send_keys(registered_user.get('password'))
-        driver.find_element(*TestLocators.LOGIN_FORM_LOGIN_BUTTON).click()
-
-        WebDriverWait(driver, 5).until(expected_conditions.visibility_of_element_located(
-            TestLocators.FORM_BURGER_TEXT
-        ))
-
-        # Выход через страницу профиля
-        driver.find_element(*TestLocators.PROFILE_LINK).click()
-        WebDriverWait(driver, 5).until(expected_conditions.visibility_of_element_located(
-            TestLocators.LOGOUT_BUTTON_PROFILE
-        ))
-        driver.find_element(*TestLocators.LOGOUT_BUTTON_PROFILE).click()
-
-        WebDriverWait(driver, 5).until(expected_conditions.visibility_of_element_located(
-            TestLocators.LOGIN_FORM_LOGIN_BUTTON
-        ))
-
-        assert driver.current_url == PageUrl.LOGIN_PAGE_URL
+    # вход по кнопке «Войти в аккаунт» на главной
+    def test_logout_of_personal_account_success(self, driver, login):
+        WebDriverWait(driver, 6).until(expected_conditions.visibility_of_element_located(
+            TestLocators.button_make_the_order))
+        driver.find_element(*TestLocators.button_personal_account).click()
+        WebDriverWait(driver, 6).until(expected_conditions.visibility_of_element_located(TestLocators.profile))
+        driver.find_element(*TestLocators.button_logout).click()
+        WebDriverWait(driver, 6).until(expected_conditions.visibility_of_element_located(TestLocators.button_login))
+        assert driver.find_element(*TestLocators.button_login).is_displayed()
